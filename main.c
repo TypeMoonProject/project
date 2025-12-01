@@ -1,5 +1,6 @@
-#include"SDL2/SDL.h"
+#include"SDL.h"
 #include<stdio.h>
+#include"core_struct.h"
 
 int main(int argc, char *argv[])
 {
