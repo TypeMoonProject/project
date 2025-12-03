@@ -18,5 +18,38 @@ typedef struct {
     bool hasExpandedShop;      // 是否扩充了店面
 } ShopUpgrades;
 
+// 乞丐状态枚举
+typedef enum {
+    BEGGAR_STATE_WAITING,      // 等待状态
+    BEGGAR_STATE_SERVED,       // 已获得食物
+    BEGGAR_STATE_RUNNING       // 逃跑状态
+} BeggarState;
+
+// 乞丐结构体
+typedef struct {
+    bool isPresent;            // 是否存在
+    BeggarState state;         // 当前状态
+    int patienceTimer;         // 耐心计时器
+    int runTimer;              // 逃跑计时器（给予玩家抓住的时间）
+    int coinReward;            // 金币奖励
+} Beggar;
+
+
+// 店铺升级相关
+bool CanUpgradeShop(UpgradeType type, int currentCoins, ShopUpgrades* upgrades);
+bool PurchaseUpgrade(UpgradeType type, int* currentCoins, ShopUpgrades* upgrades);
+int GetUpgradeCost(UpgradeType type);
+const char* GetUpgradeName(UpgradeType type);
+const char* GetUpgradeDescription(UpgradeType type);
+
+// 数据持久化相关
+bool SaveGame(GameState* saveData, const char* filePath);
+bool LoadGame(GameState* saveData, const char* filePath);
+
+// 乞丐机制相关
+bool SpawnBeggar(Beggar* beggar);
+void UpdateBeggar(Beggar* beggar);
+void ServeBeggar(Beggar* beggar);
+bool CatchBeggar(Beggar* beggar, int* coins);
 
 #endif // EXTENSION_MODULE_H_
