@@ -1,3 +1,6 @@
+#ifndef CORE_STRUCT_H
+#define CORE_STRUCT_H
+
 #include <stdbool.h>
 #include <time.h>
 typedef struct{
@@ -30,3 +33,4 @@ typedef struct{
     int remaining_time;//剩余等待时间
     bool order_is_finished;
 }Customer;
+#endif // CORE_STRUCT_H
