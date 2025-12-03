@@ -35,13 +35,13 @@ int GetUpgradeCost(UpgradeType type) {
 const char* GetUpgradeName(UpgradeType type) {
     switch (type) {
         case UPGRADE_AUTO_MEAT_CUTTER:
-            return "自动切肉机";
+            return "Auto Meat Cutter";
         case UPGRADE_GOLD_PLATE:
-            return "金盘子";
+            return "Gold Plate";
         case UPGRADE_EXPAND_SHOP:
-            return "扩充店面";
+            return "Shop Expansion";
         default:
-            return "未知升级";
+            return "Unknown Upgrade";
     }
 }
 
@@ -49,15 +49,16 @@ const char* GetUpgradeName(UpgradeType type) {
 const char* GetUpgradeDescription(UpgradeType type) {
     switch (type) {
         case UPGRADE_AUTO_MEAT_CUTTER:
-            return "肉的库存为0后自动恢复满库存";
+            return "Automatically refills meat stock when it reaches zero";
         case UPGRADE_GOLD_PLATE:
-            return "卷饼的价值增加";
+            return "Increases the value of wraps";
         case UPGRADE_EXPAND_SHOP:
-            return "店铺可以同时容纳更多顾客";
+            return "Allows more customers to be served simultaneously";
         default:
             return "";
     }
 }
+// ...existing code...
 
 // 检查是否可以升级店铺
 bool CanUpgradeShop(UpgradeType type, int currentCoins, ShopUpgrades* upgrades) {
