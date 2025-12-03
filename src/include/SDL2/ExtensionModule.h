@@ -11,12 +11,6 @@ typedef enum {
     UPGRADE_EXPAND_SHOP        // 扩充店面
 } UpgradeType;
 
-// 店铺升级状态结构体
-typedef struct {
-    bool hasAutoMeatCutter;    // 是否拥有自动切肉机
-    bool hasGoldPlate;         // 是否拥有金盘子
-    bool hasExpandedShop;      // 是否扩充了店面
-} ShopUpgrades;
 
 // 乞丐状态枚举
 typedef enum {
@@ -34,22 +28,23 @@ typedef struct {
     int coinReward;            // 金币奖励
 } Beggar;
 
-
+// 扩展模块函数声明
 // 店铺升级相关
-bool CanUpgradeShop(UpgradeType type, int currentCoins, ShopUpgrades* upgrades);
-bool PurchaseUpgrade(UpgradeType type, int* currentCoins, ShopUpgrades* upgrades);
-int GetUpgradeCost(UpgradeType type);
-const char* GetUpgradeName(UpgradeType type);
-const char* GetUpgradeDescription(UpgradeType type);
+bool CanUpgradeShop(UpgradeType type, int currentCoins, ShopUpgrades* upgrades);    // 检查是否可以升级
+bool PurchaseUpgrade(UpgradeType type, int* currentCoins, ShopUpgrades* upgrades);  // 购买升级并更新金币和状态
+int GetUpgradeCost(UpgradeType type);                                               // 获取升级成本
+const char* GetUpgradeName(UpgradeType type);                                       // 获取升级名称
+const char* GetUpgradeDescription(UpgradeType type);                                // 获取升级描述
 
 // 数据持久化相关
-bool SaveGame(GameState* saveData, const char* filePath);
-bool LoadGame(GameState* saveData, const char* filePath);
+bool SaveGame(GameState* saveData, const char* filePath);                           // 保存游戏数据到文件
+bool LoadGame(GameState* saveData, const char* filePath);                           // 从文件加载游戏数据
 
 // 乞丐机制相关
-bool SpawnBeggar(Beggar* beggar);
-void UpdateBeggar(Beggar* beggar);
-void ServeBeggar(Beggar* beggar);
-bool CatchBeggar(Beggar* beggar, int* coins);
+bool SpawnBeggar(Beggar* beggar);                                                   // 生成乞丐
+void ResetBeggar(Beggar* beggar);                                                   // 重置乞丐状态
+void UpdateBeggar(Beggar* beggar);                                                  // 更新乞丐状态
+void ServeBeggar(Beggar* beggar);                                                   // 为乞丐提供食物
+bool CatchBeggar(Beggar* beggar, int* coins);                                       // 抓住逃跑的乞丐并获得奖励
 
 #endif // EXTENSION_MODULE_H_

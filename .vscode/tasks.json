@@ -1,0 +1,44 @@
+{
+    "tasks": [
+        {
+            "type": "cppbuild",
+            "label": "C/C++: gcc.exe 生成活动文件",
+            "command": "C:\\msys64\\mingw64\\bin\\gcc.exe",
+            "args": [
+                "-fdiagnostics-color=always",
+                "-g",
+                //"${file}",
+                //"${fileDirname}\\*.c",
+                "${workspaceFolder}\\*.c",
+                "-o",
+                "${fileDirname}\\${fileBasenameNoExtension}.exe",
+                // "-g",    //生成和调试有关的信息
+                // "-Wall", // 开启额外警告 
+                // "${workspaceFolder}\\project\\*.c",  //当前工作空间下文件夹source目录名下的所有cpp文件。 source对应工程目录下的source文件夹名字，可自行修改   
+                "-I","${workspaceFolder}\\src\\include\\SDL2",      // 参数-I 和工程路径 指明了项目中要引用的非标准头文件的位置。 include对应工程目录下的include文件夹名字，可自行修改                   
+                "-L", "${workspaceFolder}\\src\\lib",  // 库文件路径
+                // "-o",                      
+                // "${workspaceFolder}\\out\\${fileBasenameNoExtension}.exe", //指定输出的文件名为out，默认a.exe。out对应工程目录下的out文件夹名字，可自行修改 
+                //                                     //使用c++17标准编译
+                // "-finput-charset=UTF-8",                           //输入编译器默认文本编码 默认为utf-8
+                // "-fexec-charset=GB18030",
+                "-lmingw32",   // MinGW 必需
+                "-lSDL2main",  // SDL2 主库（顺序不可变）
+                "-lSDL2",      // SDL2 核心库
+                //"-mwindows"    // 隐藏控制台窗口（GUI应用）     
+            ],
+            "options": {
+                "cwd": "${fileDirname}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "调试器生成的任务。"
+        }
+    ],
+    "version": "2.0.0"
+}
