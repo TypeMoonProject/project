@@ -8,7 +8,16 @@ typedef struct{
     int time;
     bool running_or_not;
     int day;//天数
+    ShopUpgrades upgrades;
 }GameState;
+
+// 店铺升级状态结构体
+typedef struct {
+    bool hasAutoMeatCutter;    // 是否拥有自动切肉机
+    bool hasGoldPlate;         // 是否拥有金盘子
+    bool hasExpandedShop;      // 是否扩充了店面
+} ShopUpgrades;
+
 typedef struct{
     int flatbread;//面饼
     int meat;
@@ -24,13 +33,17 @@ typedef struct{
     int finished_cola;//成品可乐
     int finished_chips;//成品薯条
 }Inventory;
+
 typedef struct{
-    int requirement[7][5];
-    //列：分别是7种商品的需求量：0⾁卷饼；1⻩⽠卷饼；2沙司卷饼；3薯条卷饼；4番茄酱卷饼；5可乐；6薯条
-    //行：暂定最多点5份
+    int pancake_requirement[5][5];
+    //行：分别是7种商品的需求量：0⾁卷饼；1⻩⽠卷饼；2沙司卷饼；3薯条卷饼；4番茄酱卷饼；（同一行配料组成一个卷饼）
+    //列：暂定最多点5份
     int patience;
     int original_time;//初始等待时间
     int remaining_time;//剩余等待时间
-    bool order_is_finished;
+    bool cola_demand;//是否要可乐
+    bool chips_demand;//是否要薯条
+    bool order_is_finished;//订单是否完成
 }Customer;
+
 #endif // CORE_STRUCT_H
