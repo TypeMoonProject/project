@@ -1,3 +1,4 @@
+
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <stdio.h>
@@ -417,7 +418,7 @@ int main(int argc, char *argv[]) {
     }
     
     // 加载字体
-    TTF_Font *font = TTF_OpenFont("Arial.ttf", 24);
+    TTF_Font *font = TTF_OpenFont("./font/Arial.ttf", 24);
     if (font == NULL) {
         printf("Failed to load font! TTF_Error: %s\n", TTF_GetError());
         SDL_DestroyRenderer(renderer);
