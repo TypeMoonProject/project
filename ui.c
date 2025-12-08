@@ -45,7 +45,7 @@ SDL_Window* init_creat(){
 TTF_Font *open_font(char *font_position,int size){
     TTF_Font *font=TTF_OpenFont(font_position,size);
     if(font==NULL){
-        SDL_Log("%s",TTF_GetError());
+        SDL_Log("OPEN TTF FAILED:%s",TTF_GetError());
     }
     return font;
 }
@@ -55,6 +55,9 @@ void print(TTF_Font *font,char *word,color *col,SDL_Renderer *ren,SDL_Rect *rect
     SDL_Color co={col->r,col->g,col->b,col->a};
     SDL_Surface *wo=TTF_RenderUTF8_Blended(font,word,co);
     SDL_Texture* text=SDL_CreateTextureFromSurface(ren,wo);
+    if(wo==NULL||text==NULL){
+        SDL_Log("LODA WORD FAILED:%s",TTF_GetError());
+    }
     SDL_FreeSurface(wo);
     SDL_RenderCopy(ren,text,NULL,rect);
 }
@@ -181,7 +184,7 @@ void action(char *position,SDL_Rect *rect,color *col,int speed){
     SDL_Event event;
     first_ui(ren,win,&rect[1],&col[0],&col[4],position,f_p,10);
     draw_ui(ren);
-    //back_music(id);
+    back_music(id);
     bool run=true;
     while(run){
         while(SDL_PollEvent(&event)!=0){
