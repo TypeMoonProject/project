@@ -109,6 +109,19 @@ bool PurchaseUpgrade(UpgradeType type, int* currentCoins, ShopUpgrades* upgrades
     
     return true;
 }
+// 应用自动切肉机效果
+void ApplyAutoMeatCutterEffect(Inventory* inventory, ShopUpgrades* upgrades) {
+    if (upgrades->hasAutoMeatCutter && inventory->meat <= 0) {
+        inventory->meat += 10; // 自动补充10单位肉
+    }
+}
+
+// 应用金盘子效果，卷饼的价值增加
+void ApplyGoldPlateEffect(GameState* state) {
+    if (state->upgrades.hasGoldPlate) {
+        state->money += 5; // 每卖出一个卷饼额外获得5金币
+    }
+}
 
 // 保存游戏数据
 bool SaveGame(GameState* saveData, const char* filePath) {
