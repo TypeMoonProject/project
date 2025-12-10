@@ -16,7 +16,6 @@ typedef struct color{
 }color;
 
 char position[]="./sourse/picture/begin.png";
-char g_p[]="./sourse/picture/kitchen.png";
 char f_p[]="./font/Arial.ttf";
 //(X,Y)起始点(W,H)区域宽高
 //                 X   Y   H   W
