@@ -48,7 +48,7 @@ void action(char *position,SDL_Rect *rect,color *col,int speed,char *f_p){
                             break;
                     }
                     break;
-                case SDL_KEYUP:                           //案件抬起事件
+                case SDL_KEYUP:                           //按键抬起事件
                     break;
             }
         }
