@@ -16,6 +16,8 @@ typedef struct color{
 }color;
 
 char position[]="./sourse/picture/begin.png";
+char g_p[]="./sourse/picture/kitchen.png";
+char f_p[]="./font/Arial.ttf";
 //(X,Y)起始点(W,H)区域宽高
 //                 X   Y   H   W
 SDL_Rect rect[]={{200,200,10 ,10 },//鼠标
@@ -39,12 +41,11 @@ SDL_Renderer *create_renderer(SDL_Window *win);
 SDL_Surface *load_image(char *position);
 void draw_rectangle(SDL_Renderer *ren,SDL_Rect *rect,color *col);
 void callback(void *userdata,Uint8 *stream,int len);
-void back_music(int id);
+int back_music();
 void into_image(SDL_Window *win,SDL_Renderer *ren,SDL_Surface *ima);
 void move_rect(SDL_Renderer *ren,SDL_Rect *rect,color *col,int speed);
 void quit(SDL_Window *win,SDL_Renderer *ren);
 void draw_ui(SDL_Renderer *ren);
-void action(char *position,SDL_Rect *rect,color *col,int speed);
 void first_ui(SDL_Renderer *ren,SDL_Window *win,SDL_Rect *rect,color *col1,color *col2,char *position,char *f_p,int size);
 
 #endif
