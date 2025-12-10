@@ -179,6 +179,8 @@ void game_ui(SDL_Renderer *ren,SDL_Window *win,char *f_p,Inventory *inventory,Cu
     char g_p[]="./sourse/picture/kitchen.png";
     char g_p1[]="./sourse/picture/data.png";
     char g_p2[]="./sourse/picture/head.png";
+    SDL_Rect re1={0,0,210,760};
+    SDL_Rect re2={439,500,61,100};
     SDL_Surface *ima =load_image(g_p );
     SDL_Surface *ima1=load_image(g_p1);
     SDL_Surface *ima2=load_image(g_p2);
@@ -188,8 +190,6 @@ void game_ui(SDL_Renderer *ren,SDL_Window *win,char *f_p,Inventory *inventory,Cu
     if(text==NULL){
         SDL_Log("CREATE TEXTURE FAILED:%s",SDL_GetError());
     }
-    SDL_Rect re1={0,0,210,760};
-    SDL_Rect re2={439,500,61,100};
     //导入渲染器
     SDL_RenderCopy(ren,
                 text,
@@ -212,7 +212,7 @@ void game_ui(SDL_Renderer *ren,SDL_Window *win,char *f_p,Inventory *inventory,Cu
 }
 //打印数字
 void print_number(TTF_Font *font,Inventory *num,color *col,SDL_Renderer *ren,SDL_Rect *rect){
-    char text[10][4]={'\0'};
+    char text[11][4]={'\0'};
     sprintf(text[0],"%d",num->flatbread);
     sprintf(text[1],"%d",num->meat);
     sprintf(text[2],"%d",num->cucumber);
@@ -241,6 +241,24 @@ void print_req(TTF_Font *font,Customer *customer,color *col,SDL_Renderer *ren){
     int startX=500,startY=500;    // 起始坐标
     int cellWidth=20,cellHeight=20; // 单元格尺寸
     int padding=5;                  // 文本内边距
+    char cola[]="I need cola";
+    char chip[]="I need chips";
+    char time[]="remaining time:";
+    char ju[5]={'\0'};
+    SDL_Rect rect1={500,480,100,20};
+    SDL_Rect rect2={500,460,100,20};
+    SDL_Rect rect3={500,0  ,100,20};
+    SDL_Rect rect4={600,0  ,20 ,20};
+    //
+    if((customer->chips_demand)==1){
+        print(font,chip,col,ren,&rect1);
+    }
+    if((customer->cola_demand)==1){
+        print(font,cola,col,ren,&rect2);
+    }
+    print(font,time,col,ren,&rect3);
+    sprintf(ju,"%d",customer->remaining_time);
+    print(font,ju,col,ren,&rect4);
     //
     char req[5][5]={'\0'};
     for(int i=0;i<5;i++){
