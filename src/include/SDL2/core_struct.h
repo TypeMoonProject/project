@@ -39,8 +39,11 @@ typedef struct{
 
 typedef struct{
     int pancake_requirement[5][5];
-    //行：分别是7种商品的需求量：0⾁卷饼；1⻩⽠卷饼；2沙司卷饼；3薯条卷饼；4番茄酱卷饼；（同一行配料组成一个卷饼）
-    //列：暂定最多点5份
+    /*行：分别是5种商品的需求量：0⾁卷饼；1⻩⽠卷饼；2沙司卷饼；3薯条卷饼；4番茄酱卷饼；（同一行配料组成一个卷饼）
+    0为不要，1为要
+    列：暂定最多点5份
+    */
+    int patience;
     int patience;
     int original_time;//初始等待时间
     int remaining_time;//剩余等待时间
@@ -50,3 +53,4 @@ typedef struct{
 }Customer;
 
 #endif // CORE_STRUCT_H
+
