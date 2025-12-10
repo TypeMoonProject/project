@@ -3,6 +3,14 @@
 
 #include <stdbool.h>
 #include <time.h>
+
+// 店铺升级状态结构体
+typedef struct {
+    bool hasAutoMeatCutter;    // 是否拥有自动切肉机
+    bool hasGoldPlate;         // 是否拥有金盘子
+    bool hasExpandedShop;      // 是否扩充了店面
+}ShopUpgrades;
+
 typedef struct{
     int money;
     int time;
@@ -11,12 +19,7 @@ typedef struct{
     ShopUpgrades upgrades;
 }GameState;
 
-// 店铺升级状态结构体
-typedef struct {
-    bool hasAutoMeatCutter;    // 是否拥有自动切肉机
-    bool hasGoldPlate;         // 是否拥有金盘子
-    bool hasExpandedShop;      // 是否扩充了店面
-} ShopUpgrades;
+
 
 typedef struct{
     int flatbread;//面饼
