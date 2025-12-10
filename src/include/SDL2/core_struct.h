@@ -44,7 +44,6 @@ typedef struct{
     列：暂定最多点5份
     */
     int patience;
-    int patience;
     int original_time;//初始等待时间
     int remaining_time;//剩余等待时间
     bool cola_demand;//是否要可乐
@@ -105,5 +104,6 @@ typedef struct {
 
 
 #endif // CORE_STRUCT_H
+
 
 
