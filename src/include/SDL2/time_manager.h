@@ -21,11 +21,15 @@ struct Timer timers[20];
 
 /*示例
 计时器需要在.c中函数内部启用,不能在此处.h赋值
-timers[0].initial_time = time();
+timers[0].initial_time = time(); //在需要启动的时候赋值
 while (1){
-    timers[0].present_time = time();
-    timers[0].remaining = timers[0].duration + timers[0].initial_time - timers[0].present_time;
+    for (i=0;i<20;i++){
+        timers[i].present_time = time();
+        timers[i].remaining = timers[i].duration + timers[i].initial_time - timers[i].present_time;
+        }
     } 
 0是总计时器，后续是顾客
 
 */
+
+
