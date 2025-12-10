@@ -8,7 +8,7 @@
 
 // 自选扩展功能 (90行)：从文档的扩展功能列表中挑选一个实现，例如“乞丐机制”。实现乞丐的生成、特殊交互和奖励逻辑。
 
-#include "ExtensionModule.h"
+#include "SDL2/ExtensionModule.h"
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -157,5 +157,95 @@ bool LoadGame(GameState* saveData, const char* filePath) {
     fclose(file);
     
     return (readCount == 1);
+}
+
+// 乞丐机制相关函数实现
+
+// 生成乞丐
+bool SpawnBeggar(Beggar* beggar) {
+    if (beggar == NULL) {
+        return false;
+    }
+    
+    // 随机生成乞丐（约10%概率）
+    if (rand() % 10 != 0) {
+        return false;
+    }
+    
+    beggar->isPresent = true;
+    beggar->state = BEGGAR_STATE_WAITING;
+    beggar->patienceTimer = 15; // 15秒耐心
+    beggar->runTimer = 5;       // 5秒逃跑时间
+    beggar->coinReward = rand() % 200 + 50; // 50-250金币奖励
+    
+    return true;
+}
+
+// 重置乞丐状态
+void ResetBeggar(Beggar* beggar) {
+    if (beggar == NULL) {
+        return;
+    }
+    
+    beggar->isPresent = false;
+    beggar->state = BEGGAR_STATE_WAITING;
+    beggar->patienceTimer = 0;
+    beggar->runTimer = 0;
+    beggar->coinReward = 0;
+}
+
+// 更新乞丐状态
+void UpdateBeggar(Beggar* beggar) {
+    if (beggar == NULL || !beggar->isPresent) {
+        return;
+    }
+    
+    switch (beggar->state) {
+        case BEGGAR_STATE_WAITING:
+            beggar->patienceTimer--;
+            if (beggar->patienceTimer <= 0) {
+                beggar->state = BEGGAR_STATE_RUNNING;
+            }
+            break;
+            
+        case BEGGAR_STATE_RUNNING:
+            beggar->runTimer--;
+            if (beggar->runTimer <= 0) {
+                ResetBeggar(beggar);
+            }
+            break;
+            
+        case BEGGAR_STATE_SERVED:
+            // 已经提供食物，等待玩家处理
+            break;
+            
+        default:
+            break;
+    }
+}
+
+// 为乞丐提供食物
+void ServeBeggar(Beggar* beggar) {
+    if (beggar == NULL || !beggar->isPresent) {
+        return;
+    }
+    
+    beggar->state = BEGGAR_STATE_SERVED;
+    // 这里可以添加消耗食物的逻辑
+}
+
+// 抓住逃跑的乞丐并获得奖励
+bool CatchBeggar(Beggar* beggar, int* coins) {
+    if (beggar == NULL || !beggar->isPresent || coins == NULL) {
+        return false;
+    }
+    
+    if (beggar->state == BEGGAR_STATE_RUNNING) {
+        *coins += beggar->coinReward;
+        ResetBeggar(beggar);
+        return true;
+    }
+    
+    return false;
 }
 

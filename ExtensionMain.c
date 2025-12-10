@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "ExtensionModule.h"
+#include "SDL2/ExtensionModule.h"
 
 
 GameState gameSaveData = {
