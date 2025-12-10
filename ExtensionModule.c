@@ -159,3 +159,79 @@ bool LoadGame(GameState* saveData, const char* filePath) {
     return (readCount == 1);
 }
 
+// 生成乞丐
+bool SpawnBeggar(Beggar* beggar) {
+    // 随机生成乞丐，概率为10%
+    if (rand() % 100 < 10) {
+        beggar->isPresent = true;
+        beggar->state = BEGGAR_STATE_WAITING;
+        beggar->patienceTimer = 30; // 30秒耐心
+        beggar->runTimer = 0;
+        beggar->coinReward = 50 + rand() % 100; // 50-149金币奖励
+        return true;
+    }
+    return false;
+}
+
+// 重置乞丐状态
+void ResetBeggar(Beggar* beggar) {
+    beggar->isPresent = false;
+    beggar->state = BEGGAR_STATE_WAITING;
+    beggar->patienceTimer = 0;
+    beggar->runTimer = 0;
+    beggar->coinReward = 0;
+}
+
+// 更新乞丐状态
+void UpdateBeggar(Beggar* beggar) {
+    if (!beggar->isPresent) {
+        return;
+    }
+    
+    switch (beggar->state) {
+        case BEGGAR_STATE_WAITING:
+            // 减少耐心
+            beggar->patienceTimer--;
+            if (beggar->patienceTimer <= 0) {
+                // 耐心耗尽，开始逃跑
+                beggar->state = BEGGAR_STATE_RUNNING;
+                beggar->runTimer = 10; // 10秒逃跑时间
+            }
+            break;
+        case BEGGAR_STATE_RUNNING:
+            // 减少逃跑计时器
+            beggar->runTimer--;
+            if (beggar->runTimer <= 0) {
+                // 逃跑成功，重置乞丐
+                ResetBeggar(beggar);
+            }
+            break;
+        case BEGGAR_STATE_SERVED:
+            // 已服务，1秒后离开
+            beggar->patienceTimer--;
+            if (beggar->patienceTimer <= 0) {
+                ResetBeggar(beggar);
+            }
+            break;
+    }
+}
+
+// 为乞丐提供食物
+void ServeBeggar(Beggar* beggar) {
+    if (beggar->isPresent && beggar->state == BEGGAR_STATE_WAITING) {
+        beggar->state = BEGGAR_STATE_SERVED;
+        beggar->patienceTimer = 1; // 1秒后离开
+    }
+}
+
+// 抓住逃跑的乞丐并获得奖励
+bool CatchBeggar(Beggar* beggar, int* coins) {
+    if (beggar->isPresent && beggar->state == BEGGAR_STATE_RUNNING) {
+        // 抓住成功，获得奖励
+        *coins += beggar->coinReward;
+        ResetBeggar(beggar);
+        return true;
+    }
+    return false;
+}
+
