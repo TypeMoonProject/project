@@ -24,7 +24,11 @@
                 // "-fexec-charset=GB18030",
                 "-lmingw32",   // MinGW 必需
                 "-lSDL2main",  // SDL2 主库（顺序不可变）
-                "-lSDL2",      // SDL2 核心库
+                "-lSDL2",     
+                 "-lSDL2_ttf",  // 链接 SDL_ttf 库
+                "-lSDL2_image" // 链接 SDL_image 库
+
+                 // SDL2 核心库
                 //"-mwindows"    // 隐藏控制台窗口（GUI应用）     
             ],
             "options": {
