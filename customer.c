@@ -5,100 +5,101 @@
 #include "core_struct.h"
 #include "customer.h"
 
-static int customer_type = 0;
-static int total_earnings = 0; /*总收益*/
-static int system_initialized = 0;
+// 函数声明
+Customer GenerateCustomer(void);
+void UpdateCustomer(Customer* customer, int elapsed_time);
+bool SubmitOrder(Customer customer, int wrapped_pancake[5][5], int cola_status, int chips_status);
+int CalculateEarnings(Customer customer);
+int Pancake_demand(int pancake_requirement[5][5]);
+int bool_number_generator(void);
+int check_pancake_order_completion(int pancake_requirement[5][5], int wrapped_pancake[5][5]);
+void ResetCustomerSystem(void);
+int GetTotalEarnings(void);
 
-// 初始化顾客系统（只需调用一次）
-void InitCustomerSystem(void) {
-    if (!system_initialized) {
-        srand(time(NULL));
-        system_initialized = 1;
-    }
-}
+int customer_type = 0;
+int total_earnings = 0; // 全局总收益
+int pancake_amount = 0; // 仅作初始化用途
+int customer_id_counter = 1;
 
-/*顾客生成与更新*/
-Customer GenerateCustomer(void) {
-    if (!system_initialized) {
-        InitCustomerSystem();
-    }
+// 主函数用于测试顾客系统（调用customer.c时必看参考）
+int main() {   
+    srand(time(NULL));
+    ResetCustomerSystem();
+    printf("total_earnings initial:%d\n", GetTotalEarnings());
+    Customer customer1 = GenerateCustomer();
+    customer1.customer_id = customer_id_counter++;
     
-    Customer customer1;
-    customer1.patience = 0;
-    customer1.cola_demand = false;
-    customer1.chips_demand = false;
+    printf("=== 快餐店模拟游戏开始 ===\n");
+    printf("按's'或'S'提交订单，其他键继续等待\n");
+    printf("=======================\n\n");
     
-    /*初始化顾客需求数组为0*/
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            customer1.pancake_requirement[i][j] = 0;
+    // 模拟多次更新，每次更新1秒
+    for (int i = 0; i < 51; i++) {
+        printf("\n=== 时间: 第%d秒 ===\n", i+1);
+        
+        // 更新顾客状态
+        UpdateCustomer(&customer1, 1);
+        
+        // 如果订单已完成或顾客离开，继续下一个循环
+        if (customer1.order_is_finished) {
+            continue;
+        }
+        
+        // 检查顾客是否还在（耐心大于0）
+        if (customer1.patience <= 0) {
+            // UpdateCustomer函数已经处理了顾客离开和新顾客生成
+            continue;
+        }
+        
+        // 提示用户是否提交订单
+        printf("按's'提交订单，其他键继续等待: ");
+        char user_input;
+        scanf(" %c", &user_input);
+        
+        if (user_input == 's' || user_input == 'S') {
+            printf("\n正在提交订单...\n");
+            
+            // 准备模拟的已完成订单（假设顾客需求完全满足）
+            int wrapped_pancake[5][5];
+            for (int x = 0; x < 5; x++) {
+                for (int y = 0; y < 5; y++) {
+                    wrapped_pancake[x][y] = customer1.pancake_requirement[x][y];
+                }
+            }
+            
+            int cola_status = customer1.cola_demand ? 1 : 0;
+            int chips_status = customer1.chips_demand ? 1 : 0;
+            
+            customer1.order_is_finished = SubmitOrder(customer1, wrapped_pancake, cola_status, chips_status);
+            
+            if (customer1.order_is_finished) {
+                // 计算收益
+                int order_earnings = CalculateEarnings(customer1);
+                printf("本订单收益: $%d\n", order_earnings);
+                printf("累计总收益: $%d\n", total_earnings);
+                
+                // 订单完成后，生成新顾客
+                printf("\n顾客%d订单完成，生成新顾客...\n", customer1.customer_id);
+                customer1 = GenerateCustomer();
+                customer1.customer_id = customer_id_counter++;
+            } else {
+                printf("订单未完成，顾客继续等待...\n");
+            }
+        }
+        
+        // 检查是否结束游戏
+        if (i == 50) {
+            printf("\n=== 游戏结束 ===\n");
+            printf("最终总收益: $%d\n", total_earnings);
+            printf("共服务了%d位顾客\n", customer_id_counter - 1);
         }
     }
-
-    customer_type = rand() % 7 + 1;
     
-    /*排列组合顾客可能出现的7种食物种类方面的需求*/
-    switch(customer_type) {
-        case 1:
-            /*只要cola*/
-            customer1.patience = 30;
-            customer1.cola_demand = true;
-            break;
-        case 2:
-            /*只要pancake*/
-            customer1.patience = 45;
-            Pancake_demand(customer1.pancake_requirement);
-            break;
-        case 3:
-            /*只要chips*/
-            customer1.chips_demand = true;
-            customer1.patience = 60;
-            break;
-        case 4:
-            /*要pancake和cola*/
-            customer1.patience = 30;
-            customer1.cola_demand = true;
-            Pancake_demand(customer1.pancake_requirement);
-            break;
-        case 5:
-            /*要chips和cola*/
-            customer1.patience = 45;
-            customer1.cola_demand = true;
-            customer1.chips_demand = true;
-            break;
-        case 6:
-            /*要pancake和chips*/
-            customer1.patience = 60;
-            customer1.chips_demand = true;
-            Pancake_demand(customer1.pancake_requirement);
-            break;
-        case 7:
-            /*要pancake、chips和cola*/
-            customer1.patience = 75;
-            customer1.cola_demand = true;
-            customer1.chips_demand = true;
-            Pancake_demand(customer1.pancake_requirement);
-            break;
-    }
-    
-    /*测试输出顾客需求*/
-    printf("customer_type:%d\n", customer_type);
-    printf("chips_demand:%d\n", customer1.chips_demand);
-    printf("cola_demand:%d\n", customer1.cola_demand);
-    
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            printf("%d\t", customer1.pancake_requirement[i][j]);
-        }
-        printf("\n");
-    }
-
-    return customer1;    
+    return 0;
 }
 
 /*顾客需求中卷饼部分的生成*/    
 int Pancake_demand(int pancake_requirement[5][5]) {
-    int pancake_amount;
     pancake_amount = rand() % 5 + 1;
     
     int initial_ingredient;
@@ -110,8 +111,6 @@ int Pancake_demand(int pancake_requirement[5][5]) {
             pancake_requirement[i][j] = bool_number_generator();
         }
     }
-    
-    printf("pancake_amount:%d\n", pancake_amount);
     return pancake_amount;
 }
 
@@ -120,72 +119,233 @@ int bool_number_generator(void) {
     return rand() % 2;
 }
 
+/*顾客生成与更新*/
+Customer GenerateCustomer(void) {
+    Customer customer1;
+    customer1.patience = 0;
+    customer1.original_time = 0;
+    customer1.remaining_time = 0;
+    customer1.cola_demand = false;
+    customer1.chips_demand = false;
+    customer1.order_is_finished = false;
+    customer1.customer_id = 0;
+    
+    /*初始化顾客需求数组为0*/
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            customer1.pancake_requirement[i][j] = 0;
+        }
+    }
+
+    customer_type = rand() % 7 + 1;
+    
+    switch(customer_type) {
+        case 1:
+            customer1.patience = 10;
+            customer1.cola_demand = true;
+            break;
+        case 2:
+            customer1.patience = 15;
+            Pancake_demand(customer1.pancake_requirement);
+            break;
+        case 3:
+            customer1.chips_demand = true;
+            customer1.patience = 10;
+            break;
+        case 4:
+            customer1.patience = 15;
+            customer1.cola_demand = true;
+            Pancake_demand(customer1.pancake_requirement);
+            break;
+        case 5:
+            customer1.patience = 12;
+            customer1.cola_demand = true;
+            customer1.chips_demand = true;
+            break;
+        case 6:
+            customer1.patience = 18;
+            customer1.chips_demand = true;
+            Pancake_demand(customer1.pancake_requirement);
+            break;
+        case 7:
+            customer1.patience = 20;
+            customer1.cola_demand = true;
+            customer1.chips_demand = true;
+            Pancake_demand(customer1.pancake_requirement);
+            break;
+    }
+    
+    customer1.original_time = customer1.patience;
+    customer1.remaining_time = customer1.patience;
+    
+    printf("\n新顾客生成!\n");
+    printf("顾客类型: %d\n", customer_type);
+    printf("需要可乐: %s\n", customer1.cola_demand ? "是" : "否");
+    printf("需要薯条: %s\n", customer1.chips_demand ? "是" : "否");
+    
+    int pancake_count = 0;
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (customer1.pancake_requirement[i][j] == 1) {
+                pancake_count++;
+                break;
+            }
+        }
+    }
+    if (pancake_count > 0) {
+        printf("需要卷饼个数: %d\n", pancake_count);
+    }else {
+        printf("不需要卷饼\n");
+    }
+    printf("初始耐心值: %d秒\n", customer1.patience);
+
+    return customer1;    
+}
+
+// 时间系统需要对接！！！！！！！！！！！！！！！！！
 void UpdateCustomer(Customer* customer, int elapsed_time) {
+    // 如果订单已完成，直接返回
+    if (customer->order_is_finished) {
+        return;
+    }
     
+    // 静态变量记录上次输出的时间
+    static time_t last_output_time = 0;
+    static time_t last_patience_value = 0;
+    static int output_counter = 0;
+    static int current_customer_id = -1;
     
-    /*顾客状态更新函数待完成*/
-    /*这里可以更新顾客耐心值等*/
+    // 检查是否切换了顾客
+    if (current_customer_id != customer->customer_id) {
+        last_output_time = 0;
+        last_patience_value = customer->patience;
+        output_counter = 0;
+        current_customer_id = customer->customer_id;
+    }
     
-    // 示例：减少耐心值
+    // 获取当前时间
+    time_t current_time = time(NULL);
+    
+    // 如果是第一次调用，初始化上次输出时间
+    if (last_output_time == 0) {
+        last_output_time = current_time;
+    }
+    
+    // 保存旧耐心值用于计算变化
+    int old_patience = customer->patience;
+    
+    // 减少耐心值
     customer->patience -= elapsed_time;
     if (customer->patience < 0) {
         customer->patience = 0;
     }
     
-    printf("顾客剩余耐心: %d秒\n", customer->patience);
+    // 更新剩余等待时间
+    customer->remaining_time -= elapsed_time;
+    if (customer->remaining_time < 0) {
+        customer->remaining_time = 0;
+    }
+    
+    // 使用计数器确保每秒输出一次
+    output_counter++;
+    if (output_counter >= 1) {
+        // 计算耐心值变化
+        int patience_change = last_patience_value - customer->patience;
+        
+        // 输出当前耐心值和变化情况
+        printf("顾客%d耐心值: %d秒 (减少: %d秒)\n", 
+               customer->customer_id, customer->patience, patience_change);
+        
+        // 检查耐心值状态并给出相应提示
+        if (customer->patience <= 0) {
+            printf("  警告：顾客%d已完全失去耐心！\n", customer->customer_id);
+            printf("  顾客%d离开，生成新顾客...\n", customer->customer_id);
+            
+            // 生成新顾客覆盖原顾客
+            Customer new_customer = GenerateCustomer();
+            new_customer.customer_id = customer_id_counter++;
+            
+            // 复制新顾客数据到原顾客指针
+            *customer = new_customer;
+            
+            // 重置静态变量以处理新顾客
+            last_output_time = 0;
+            last_patience_value = customer->patience;
+            output_counter = 0;
+            current_customer_id = customer->customer_id;
+            
+            printf("  新顾客%d已生成，耐心值: %d秒\n", 
+                   customer->customer_id, customer->patience);
+            
+            return;
+        } else if (customer->patience <= customer->original_time * 0.3) {
+            printf("  提示：顾客%d耐心即将耗尽！\n", customer->customer_id);
+        } else if (customer->patience <= customer->original_time * 0.5) {
+            printf("  提示：顾客%d耐心已减少一半\n", customer->customer_id);
+        }
+        
+        // 更新上次耐心值记录
+        last_patience_value = customer->patience;
+        output_counter = 0;
+    }
 }
 
-int SubmitOrder(Customer customer, int wrapped_pancake[5][5], int cola_status, int chips_status) {
-    
-    
+bool SubmitOrder(Customer customer, int wrapped_pancake[5][5], int cola_status, int chips_status) {
     int pancake_is_finished = 0;
     int cola_is_finished = 0;
     int chips_is_finished = 0;
     
-    printf("Order submitted.\n");
-
-    /*调用检查卷饼订单完成情况的函数*/
-    pancake_is_finished = check_pancake_order_completion(customer.pancake_requirement, wrapped_pancake);
-
-    if (pancake_is_finished) {
-        printf("所有卷饼需求已满足！\n");
-    } else {
-        printf("卷饼需求未完全满足！\n");
+    printf("订单提交中...\n");
+    
+    // 检查是否有卷饼需求
+    int has_pancake_demand = 0;
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (customer.pancake_requirement[i][j] == 1) {
+                has_pancake_demand = 1;
+                break;
+            }
+        }
+        if (has_pancake_demand) break;
     }
-
-    /*判断饮料需求是否完全得到满足*/
+    
+    // 如果有卷饼需求，检查卷饼订单完成情况
+    if (has_pancake_demand) {
+        pancake_is_finished = check_pancake_order_completion(customer.pancake_requirement, wrapped_pancake);
+    } else {
+        pancake_is_finished = 1;
+    }
+    
+    // 判断饮料需求是否完全得到满足
     if (customer.cola_demand) {
         if (cola_status == 1) {
             cola_is_finished = 1;
-            printf("Cola order fulfilled.\n");
         }
     } else {
-        cola_is_finished = 1; /*不需要可乐视为已完成*/
+        cola_is_finished = 1;
     }
-
-    /*判断薯片需求是否完全得到满足*/
+    
+    // 判断薯片需求是否完全得到满足
     if (customer.chips_demand) {
         if (chips_status == 1) {
             chips_is_finished = 1;
-            printf("Chips order fulfilled.\n");
         }
     } else {
-        chips_is_finished = 1; /*不需要薯片视为已完成*/
+        chips_is_finished = 1;
     }
-
-    /*综合判断订单是否完成*/
+    
+    // 综合判断订单是否完成
     if (pancake_is_finished && cola_is_finished && chips_is_finished) {
-        printf("Order completed successfully!\n");
+        customer.order_is_finished = true;
         return 1;
     } else {
-        printf("Order not completed.\n");
+        customer.order_is_finished = false;
         return 0;
     }
 }
 
 int check_pancake_order_completion(int pancake_requirement[5][5], int wrapped_pancake[5][5]) {
-    
-    int wrapped_used[5] = {0};  /* 标记完成的卷饼是否已使用*/
+    int wrapped_used[5] = {0};
     
     /*遍历每个需求的卷饼*/
     for (int i = 0; i < 5; i++) {
@@ -207,7 +367,7 @@ int check_pancake_order_completion(int pancake_requirement[5][5], int wrapped_pa
         int found_match = 0;
         for (int j = 0; j < 5; j++) {
             if (wrapped_used[j]) {
-                continue;  /* 这个完成的卷饼已使用 */
+                continue;
             }
 
             /* 检查这一行是否有完成的卷饼 */
@@ -220,7 +380,7 @@ int check_pancake_order_completion(int pancake_requirement[5][5], int wrapped_pa
             }
             
             if (!has_wrapped) {
-                continue;  /* 这一行没有卷饼 */
+                continue;
             }
 
             /* 比较两个卷饼是否相同 */
@@ -233,50 +393,27 @@ int check_pancake_order_completion(int pancake_requirement[5][5], int wrapped_pa
             }
             
             if (is_same) {
-                wrapped_used[j] = 1;  /* 标记为已使用 */
+                wrapped_used[j] = 1;
                 found_match = 1;
                 break;
             }
         }
         
         if (!found_match) {
-            printf("没有找到匹配的完成卷饼\n");
-            return 0;  /* 有需求没找到匹配 */
-        } else {
-            printf("匹配成功\n");
+            return 0;
         }
     }
     
-    // 检查是否所有需求行都被处理
-    int requirement_count = 0;
-    for (int i = 0; i < 5; i++) {
-        int has_req = 0;
-        for (int k = 0; k < 5; k++) {
-            if (pancake_requirement[i][k] == 1) {
-                has_req = 1;
-                break;
-            }
-        }
-        if (has_req) {
-            requirement_count++;
-        }
-    }
-    
-    printf("\n卷饼需求总数: %d\n", requirement_count);
-    printf("卷饼匹配完成: 是\n");
-    
-    return 1;  /* 所有需求都找到匹配 */
+    return 1;
 }
 
-int CalculateEarnings(const Customer* customer) {
-    if (!customer) return 0;
-    
+int CalculateEarnings(Customer customer) {
     // 计算卷饼数量
     int pancake_amount = 0;
     for (int i = 0; i < 5; i++) {
         int has_ingredient = 0;
         for (int j = 0; j < 5; j++) {
-            if (customer->pancake_requirement[i][j] == 1) {
+            if (customer.pancake_requirement[i][j] == 1) {
                 has_ingredient = 1;
                 break;
             }
@@ -288,45 +425,33 @@ int CalculateEarnings(const Customer* customer) {
     
     int order_earnings = 0;
     
-    /*根据顾客类型和需求计算收益*/
-    int current_customer_type = GetCustomerType(customer);
+    // 根据顾客需求计算收益
+    bool has_pancake = (pancake_amount > 0);
+    bool has_cola = customer.cola_demand;
+    bool has_chips = customer.chips_demand;
     
-    switch(current_customer_type) {
-        case 1:
-            order_earnings = 5; /*只要cola*/
-            break;
-        case 2:
-            order_earnings = pancake_amount * 3; /*只要pancake*/
-            break;
-        case 3:
-            order_earnings = 4; /*只要chips*/
-            break;
-        case 4:
-            order_earnings = 5 + pancake_amount * 3; /*要pancake和cola*/
-            break;
-        case 5:
-            order_earnings = 5 + 4; /*要chips和cola*/
-            break;
-        case 6:
-            order_earnings = pancake_amount * 3 + 4; /*要pancake和chips*/
-            break;
-        case 7:
-            order_earnings = pancake_amount * 3 + 4 + 5; /*要pancake、chips和cola*/
-            break;
+    if (has_pancake && has_cola && has_chips) {
+        order_earnings = pancake_amount * 3 + 4 + 5;
+    } else if (has_pancake && has_chips) {
+        order_earnings = pancake_amount * 3 + 4;
+    } else if (has_chips && has_cola) {
+        order_earnings = 5 + 4;
+    } else if (has_pancake && has_cola) {
+        order_earnings = 5 + pancake_amount * 3;
+    } else if (has_chips) {
+        order_earnings = 4;
+    } else if (has_pancake) {
+        order_earnings = pancake_amount * 3;
+    } else if (has_cola) {
+        order_earnings = 5;
+    } else {
+        order_earnings = 0;
     }
     
     // 累加到总收益
     total_earnings += order_earnings;
     
-    printf("Earnings from this order: $%d\n", order_earnings);
-    printf("Total earnings: $%d\n", total_earnings);
-    
     return order_earnings;
-}
-
-
-int GetCustomerType(const Customer* customer) {
-    return customer_type;
 }
 
 // 获取总收益
@@ -338,4 +463,5 @@ int GetTotalEarnings(void) {
 void ResetCustomerSystem(void) {
     total_earnings = 0;
     customer_type = 0;
+    customer_id_counter = 1;
 }
