@@ -43,13 +43,14 @@ typedef struct{
     0为不要，1为要
     列：暂定最多点5份
     */
-    int patience;
-    int original_time;//初始等待时间
-    int remaining_time;//剩余等待时间
+    int patience;//耐心值（秒）
+    int original_time;
+    int remaining_time;
     bool cola_demand;//是否要可乐
     bool chips_demand;//是否要薯条
     bool order_is_finished;//订单是否完成
-}Customer;
+    int customer_id;//顾客ID
+} Customer;
 
 // ============ 新增：制作状态机相关结构体 ============
 // 卷饼制作状态枚举
@@ -104,6 +105,7 @@ typedef struct {
 
 
 #endif // CORE_STRUCT_H
+
 
 
 
