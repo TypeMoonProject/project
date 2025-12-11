@@ -6,16 +6,21 @@
 #include <time.h>
 #include <stdbool.h>
 #include "core_struct.h"
+Customer GenerateCustomer();
 void UpdateCustomer();
-int SubmitOrder();
-int Pancake_demand();
-int bool_number_generator();
+bool SubmitOrder();
 int check_pancake_order_completion();//linked to "SubmitOrder"
 int CalculateEarnings();
+void ResetCustomerSystem(void);
+int GetTotalEarnings(void);
+
 extern int customer_type;
 extern bool cola_demand;
 extern bool chips_demand;
 extern int pancake_amount;
 extern int cola_status;
 extern int chips_status;
-#endif
+extern int total_earnings;
+extern int customer_id_counter;
+#endif//CUSTOMER_H
+
