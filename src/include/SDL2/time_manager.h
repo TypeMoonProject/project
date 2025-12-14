@@ -13,7 +13,14 @@ typedef struct{
     int duration;
     int remaining; //剩余时间
     bool is_active; //是否激活
+<<<<<<< Updated upstream
 }Timer;
+=======
+};
+
+// 声明全局计时器数组
+extern struct Timer timers[20];
+>>>>>>> Stashed changes
 
 #endif
 

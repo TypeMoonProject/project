@@ -174,7 +174,91 @@ void first_ui(SDL_Renderer *ren,SDL_Window *win,SDL_Rect *rect,color *col1,color
 }
 
 //游戏界面
+<<<<<<< Updated upstream
 void game_ui(SDL_Renderer *ren,SDL_Window *win,SDL_Rect *rect,color *col1,color *col2,char *position,char *f_p,int size){
+=======
+void game_ui(SDL_Renderer *ren,SDL_Window *win,char *f_p,Inventory *inventory,Customer *customer){
+    char g_p[]="./sourse/picture/kitchen.png";
+    char g_p1[]="./sourse/picture/data.png";
+    char g_p2[]="./sourse/picture/head.png";
+    char g_p3[]="./sourse/picture/man.png";
+    SDL_Rect re1={0,0,210,760};
+    SDL_Rect re2={439,500,61,100};
+    SDL_Rect re3={700,400,100,150}; // 顾客图像位置和大小
+    
+    // 加载并显示背景图片
+    SDL_Surface *ima = load_image(g_p);
+    if (ima != NULL) {
+        into_image(win, ren, ima);
+        // into_image内部会处理表面，不需要在这里销毁
+    }
+    
+    // 加载并显示data.png
+    SDL_Surface *ima1 = load_image(g_p1);
+    if (ima1 != NULL) {
+        SDL_Texture *text = SDL_CreateTextureFromSurface(ren, ima1);
+        SDL_FreeSurface(ima1);
+        
+        if (text != NULL) {
+            SDL_RenderCopy(ren, text, NULL, &re1);
+            SDL_DestroyTexture(text);
+        } else {
+            SDL_Log("CREATE TEXTURE FAILED:%s", SDL_GetError());
+        }
+    }
+    
+    // 加载并显示head.png
+    SDL_Surface *ima2 = load_image(g_p2);
+    if (ima2 != NULL) {
+        SDL_Texture *text2 = SDL_CreateTextureFromSurface(ren, ima2);
+        SDL_FreeSurface(ima2);
+        
+        if (text2 != NULL) {
+            SDL_RenderCopy(ren, text2, NULL, &re2);
+            SDL_DestroyTexture(text2);
+        } else {
+            SDL_Log("CREATE TEXTURE FAILED:%s", SDL_GetError());
+        }
+    }
+    
+    // 加载并显示顾客图像
+    SDL_Surface *ima3 = load_image(g_p3);
+    if (ima3 != NULL) {
+        SDL_Texture *text3 = SDL_CreateTextureFromSurface(ren, ima3);
+        SDL_FreeSurface(ima3);
+        
+        if (text3 != NULL) {
+            SDL_RenderCopy(ren, text3, NULL, &re3);
+            SDL_DestroyTexture(text3);
+        } else {
+            SDL_Log("CREATE TEXTURE FAILED:%s", SDL_GetError());
+        }
+    }
+}
+//打印数字
+void print_number(TTF_Font *font,Inventory *num,color *col,SDL_Renderer *ren,SDL_Rect *rect){
+    char text[11][4]={'\0'};
+    sprintf(text[0],"%d",num->flatbread);
+    sprintf(text[1],"%d",num->meat);
+    sprintf(text[2],"%d",num->cucumber);
+    sprintf(text[3],"%d",num->sauce);
+    sprintf(text[4],"%d",num->chips);
+    sprintf(text[5],"%d",num->ketchup);
+    sprintf(text[6],"%d",num->cola);
+    sprintf(text[7],"%d",num->wrapper);
+    sprintf(text[8],"%d",num->box);
+    sprintf(text[9],"%d",num->bottle);
+    print(font,text[0],col,ren,&rect[2]);
+    print(font,text[1],col,ren,&rect[3]);
+    print(font,text[2],col,ren,&rect[4]);
+    print(font,text[3],col,ren,&rect[5]);
+    print(font,text[4],col,ren,&rect[6]);
+    print(font,text[5],col,ren,&rect[7]);
+    print(font,text[6],col,ren,&rect[8]);
+    print(font,text[7],col,ren,&rect[9]);
+    print(font,text[8],col,ren,&rect[10]);
+    print(font,text[9],col,ren,&rect[11]);
+>>>>>>> Stashed changes
 }
 
 //监听行为
