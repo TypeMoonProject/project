@@ -4,6 +4,9 @@
 #include <stdbool.h>
 #include "core_struct.h"
 #include "customer.h"
+#include "time_manager.h"
+
+
 
 // 函数声明
 Customer GenerateCustomer(void);
@@ -22,7 +25,7 @@ int pancake_amount = 0; // 仅作初始化用途
 int customer_id_counter = 1;
 
 // 主函数用于测试顾客系统（调用customer.c时必看参考）
-int main() {   
+/*int main() {   
     srand(time(NULL));
     ResetCustomerSystem();
     printf("total_earnings initial:%d\n", GetTotalEarnings());
@@ -97,7 +100,7 @@ int main() {
     
     return 0;
 }
-
+*/
 /*顾客需求中卷饼部分的生成*/    
 int Pancake_demand(int pancake_requirement[5][5]) {
     pancake_amount = rand() % 5 + 1;
@@ -202,7 +205,6 @@ Customer GenerateCustomer(void) {
     return customer1;    
 }
 
-// 时间系统需要对接！！！！！！！！！！！！！！！！！
 void UpdateCustomer(Customer* customer, int elapsed_time) {
     // 如果订单已完成，直接返回
     if (customer->order_is_finished) {
@@ -211,16 +213,25 @@ void UpdateCustomer(Customer* customer, int elapsed_time) {
     
     // 静态变量记录上次输出的时间
     static time_t last_output_time = 0;
-    static time_t last_patience_value = 0;
     static int output_counter = 0;
     static int current_customer_id = -1;
     
     // 检查是否切换了顾客
     if (current_customer_id != customer->customer_id) {
         last_output_time = 0;
-        last_patience_value = customer->patience;
         output_counter = 0;
         current_customer_id = customer->customer_id;
+        
+        // 为新顾客启动计时器
+        int timer_id = customer->customer_id;
+        if (timer_id >= 0 && timer_id < MAX_TIMER) {
+            timers[timer_id].id = timer_id;
+            timers[timer_id].initial_time = time(NULL);
+            timers[timer_id].present_time = time(NULL);
+            timers[timer_id].duration = customer->original_time;
+            timers[timer_id].remaining = customer->original_time;
+            timers[timer_id].is_active = true;
+        }
     }
     
     // 获取当前时间
@@ -231,35 +242,39 @@ void UpdateCustomer(Customer* customer, int elapsed_time) {
         last_output_time = current_time;
     }
     
-    // 保存旧耐心值用于计算变化
-    int old_patience = customer->patience;
-    
-    // 减少耐心值
-    customer->patience -= elapsed_time;
-    if (customer->patience < 0) {
-        customer->patience = 0;
+    // 更新顾客的计时器
+    int timer_id = customer->customer_id;
+    if (timer_id >= 0 && timer_id < MAX_TIMER && timers[timer_id].is_active) {
+        // 更新计时器的当前时间
+        timers[timer_id].present_time = current_time;
+        
+        // 计算剩余时间
+        timers[timer_id].remaining = timers[timer_id].duration - 
+                                    (timers[timer_id].present_time - timers[timer_id].initial_time);
+        
+        // 确保剩余时间不为负数
+        if (timers[timer_id].remaining < 0) {
+            timers[timer_id].remaining = 0;
+        }
+        
+        // 更新顾客的耐心值
+        customer->patience = timers[timer_id].remaining;
+        customer->remaining_time = timers[timer_id].remaining;
     }
     
-    // 更新剩余等待时间
-    customer->remaining_time -= elapsed_time;
-    if (customer->remaining_time < 0) {
-        customer->remaining_time = 0;
-    }
-    
-    // 使用计数器确保每秒输出一次
     output_counter++;
     if (output_counter >= 1) {
-        // 计算耐心值变化
-        int patience_change = last_patience_value - customer->patience;
-        
-        // 输出当前耐心值和变化情况
-        printf("顾客%d耐心值: %d秒 (减少: %d秒)\n", 
-               customer->customer_id, customer->patience, patience_change);
+        printf("顾客%d耐心值: %d秒\n", customer->customer_id, customer->patience);
         
         // 检查耐心值状态并给出相应提示
         if (customer->patience <= 0) {
             printf("  警告：顾客%d已完全失去耐心！\n", customer->customer_id);
             printf("  顾客%d离开，生成新顾客...\n", customer->customer_id);
+            
+            // 停止当前计时器
+            if (timer_id >= 0 && timer_id < MAX_TIMER) {
+                timers[timer_id].is_active = false;
+            }
             
             // 生成新顾客覆盖原顾客
             Customer new_customer = GenerateCustomer();
@@ -270,12 +285,21 @@ void UpdateCustomer(Customer* customer, int elapsed_time) {
             
             // 重置静态变量以处理新顾客
             last_output_time = 0;
-            last_patience_value = customer->patience;
             output_counter = 0;
             current_customer_id = customer->customer_id;
             
-            printf("  新顾客%d已生成，耐心值: %d秒\n", 
-                   customer->customer_id, customer->patience);
+            // 为新顾客启动计时器
+            int new_timer_id = customer->customer_id;
+            if (new_timer_id >= 0 && new_timer_id < MAX_TIMER) {
+                timers[new_timer_id].id = new_timer_id;
+                timers[new_timer_id].initial_time = time(NULL);
+                timers[new_timer_id].present_time = time(NULL);
+                timers[new_timer_id].duration = customer->original_time;
+                timers[new_timer_id].remaining = customer->original_time;
+                timers[new_timer_id].is_active = true;
+            }
+            
+            printf("  新顾客%d已生成，耐心值: %d秒\n", customer->customer_id, customer->patience);
             
             return;
         } else if (customer->patience <= customer->original_time * 0.3) {
@@ -284,8 +308,6 @@ void UpdateCustomer(Customer* customer, int elapsed_time) {
             printf("  提示：顾客%d耐心已减少一半\n", customer->customer_id);
         }
         
-        // 更新上次耐心值记录
-        last_patience_value = customer->patience;
         output_counter = 0;
     }
 }
