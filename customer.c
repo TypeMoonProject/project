@@ -38,7 +38,7 @@ int customer_id_counter = 1;
     
     // 模拟多次更新，每次更新1秒
     for (int i = 0; i < 51; i++) {
-        printf("\n=== 时间: 第%d秒 ===\n", i+1);
+        printf("\n=== 操作次数: 第%d次 ===\n", i+1);
         
         // 更新顾客状态
         UpdateCustomer(&new_customer, 1);
@@ -85,7 +85,6 @@ int customer_id_counter = 1;
                 // 订单完成后，生成新顾客
                 printf("\n顾客%d订单完成，生成新顾客...\n", new_customer.customer_id);
                 new_customer = GenerateCustomer();
-                new_customer.customer_id = customer_id_counter++;
             } else {
                 printf("订单未完成，顾客继续等待...\n");
             }
