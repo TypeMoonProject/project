@@ -6,11 +6,10 @@
 #include <time.h>
 #include <stdbool.h>
 #include "core_struct.h"
-Customer GenerateCustomer();
-void UpdateCustomer();
-bool SubmitOrder();
-int check_pancake_order_completion();//linked to "SubmitOrder"
-int CalculateEarnings();
+Customer GenerateCustomer(void);
+void UpdateCustomer(Customer* customer);
+bool SubmitOrder(Customer customer, int wrapped_pancake[5][5], int cola_status, int chips_status);
+int CalculateEarnings(Customer customer);
 void ResetCustomerSystem(void);
 int GetTotalEarnings(void);
 
