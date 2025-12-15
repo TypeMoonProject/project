@@ -1,6 +1,10 @@
 #include<ui.h>
 #include<Inputmanagement.h>
 #include<ExtensionModule.h>
+#include<customer.h>
+#include<ExtensionModule.h>
+#include<inventory_manager.h>
+#include<production_statemachine.h>
 
 //监听行为
 void action(char *position,SDL_Rect *rect,color *col,int speed,char *f_p){
