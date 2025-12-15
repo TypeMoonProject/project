@@ -41,7 +41,7 @@ int customer_id_counter = 1;
         printf("\n=== 操作次数: 第%d次 ===\n", i+1);
         
         // 更新顾客状态
-        UpdateCustomer(&new_customer, 1);
+        UpdateCustomer(&new_customer);
         
         // 如果订单已完成或顾客离开，继续下一个循环
         if (new_customer.order_is_finished) {
@@ -49,7 +49,7 @@ int customer_id_counter = 1;
         }
         
         // 检查顾客是否还在（耐心大于0）
-        if (new_customer.patience <=<|fim_middle|> 0) {
+        if (new_customer.patience <=0) {
             printf("顾客已离开，生成新顾客...\n");
             // UpdateCustomer函数已经处理了顾客离开和新顾客生成
             continue;
