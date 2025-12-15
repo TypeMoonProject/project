@@ -49,7 +49,7 @@ int customer_id_counter = 1;
         }
         
         // 检查顾客是否还在（耐心大于0）
-        if (new_customer.patience <= 0) {
+        if (new_customer.patience <=<|fim_middle|> 0) {
             printf("顾客已离开，生成新顾客...\n");
             // UpdateCustomer函数已经处理了顾客离开和新顾客生成
             continue;
@@ -112,6 +112,9 @@ int Pancake_demand(int pancake_requirement[5][5]) {
         pancake_requirement[i][initial_ingredient] = 1;
         
         for (int j = 0; j < 5; j++) {
+            if (j == initial_ingredient) {
+                continue;
+            }
             pancake_requirement[i][j] = bool_number_generator();
         }
     }
