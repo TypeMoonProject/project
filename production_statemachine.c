@@ -9,7 +9,6 @@
 //函数声明
 //需要调用的人只要看注释后面带*的即可
 //注意action的指令必须和注释里的一致 否则会报错
-bool CheckInventory(Inventory* inv, const char* item, int qty);//检查库存
 void InitWorkbenches(Workbenches* work);//初始化操作台*
 bool ProcessBurritoAction(Workbenches* work, Inventory* inv, const char* action);//处理卷饼制作动作*
 bool PlaceFlatbread(Workbenches* work, Inventory* inv);//放置面饼

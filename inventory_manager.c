@@ -5,15 +5,6 @@
 #include "game_manager.h"
 #include  <windows.h>
 #include "inventory_manager.h"
-// 库存管理函数声明
-void InitInventory(Inventory *inv);
-int CheckInventoryAmount(Inventory* inv, const char* item);//检查对应物品的库存 （玩家输入特定的物品名称，返回对应的数量） 
-bool CheckInventory(Inventory* inv, const char* item, int quantity);
-bool UseInventory(Inventory* inv, const char* item, int quantity);
-bool AddInventory(Inventory* inv, const char* item, int quantity);
-bool PreprocessMeat(Inventory* inv, int quantity);
-bool PreprocessChips(Inventory* inv, int quantity);
-void PrintInventoryStatus(Inventory* inv);    //打印全部库存状态
 // 库存管理函数实现
 
 //库存的初始化  
