@@ -29,8 +29,8 @@ int customer_id_counter = 1;
     srand(time(NULL));
     ResetCustomerSystem();
     printf("total_earnings initial:%d\n", GetTotalEarnings());
-    Customer customer1 = GenerateCustomer();
-    customer1.customer_id = customer_id_counter++;
+    Customer new_customer = GenerateCustomer();
+    
     
     printf("=== 快餐店模拟游戏开始 ===\n");
     printf("按's'或'S'提交订单，其他键继续等待\n");
@@ -41,15 +41,16 @@ int customer_id_counter = 1;
         printf("\n=== 时间: 第%d秒 ===\n", i+1);
         
         // 更新顾客状态
-        UpdateCustomer(&customer1, 1);
+        UpdateCustomer(&new_customer, 1);
         
         // 如果订单已完成或顾客离开，继续下一个循环
-        if (customer1.order_is_finished) {
+        if (new_customer.order_is_finished) {
             continue;
         }
         
         // 检查顾客是否还在（耐心大于0）
-        if (customer1.patience <= 0) {
+        if (new_customer.patience <= 0) {
+            printf("顾客已离开，生成新顾客...\n");
             // UpdateCustomer函数已经处理了顾客离开和新顾客生成
             continue;
         }
@@ -66,25 +67,25 @@ int customer_id_counter = 1;
             int wrapped_pancake[5][5];
             for (int x = 0; x < 5; x++) {
                 for (int y = 0; y < 5; y++) {
-                    wrapped_pancake[x][y] = customer1.pancake_requirement[x][y];
+                    wrapped_pancake[x][y] = new_customer.pancake_requirement[x][y];
                 }
             }
             
-            int cola_status = customer1.cola_demand ? 1 : 0;
-            int chips_status = customer1.chips_demand ? 1 : 0;
+            int cola_status = new_customer.cola_demand ? 1 : 0;
+            int chips_status = new_customer.chips_demand ? 1 : 0;
             
-            customer1.order_is_finished = SubmitOrder(customer1, wrapped_pancake, cola_status, chips_status);
+            new_customer.order_is_finished = SubmitOrder(new_customer, wrapped_pancake, cola_status, chips_status);
             
-            if (customer1.order_is_finished) {
+            if (new_customer.order_is_finished) {
                 // 计算收益
-                int order_earnings = CalculateEarnings(customer1);
+                int order_earnings = CalculateEarnings(new_customer);
                 printf("本订单收益: $%d\n", order_earnings);
                 printf("累计总收益: $%d\n", total_earnings);
                 
                 // 订单完成后，生成新顾客
-                printf("\n顾客%d订单完成，生成新顾客...\n", customer1.customer_id);
-                customer1 = GenerateCustomer();
-                customer1.customer_id = customer_id_counter++;
+                printf("\n顾客%d订单完成，生成新顾客...\n", new_customer.customer_id);
+                new_customer = GenerateCustomer();
+                new_customer.customer_id = customer_id_counter++;
             } else {
                 printf("订单未完成，顾客继续等待...\n");
             }
@@ -124,19 +125,20 @@ int bool_number_generator(void) {
 
 /*顾客生成与更新*/
 Customer GenerateCustomer(void) {
-    Customer customer1;
-    customer1.patience = 0;
-    customer1.original_time = 0;
-    customer1.remaining_time = 0;
-    customer1.cola_demand = false;
-    customer1.chips_demand = false;
-    customer1.order_is_finished = false;
-    customer1.customer_id = 0;
+    Customer new_customer;
+    new_customer.patience = 0;
+    new_customer.original_time = 0;
+    new_customer.remaining_time = 0;
+    new_customer.cola_demand = false;
+    new_customer.chips_demand = false;
+    new_customer.order_is_finished = false;
+    // 分配唯一的顾客ID
+    new_customer.customer_id = customer_id_counter++;
     
     /*初始化顾客需求数组为0*/
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 5; j++) {
-            customer1.pancake_requirement[i][j] = 0;
+            new_customer.pancake_requirement[i][j] = 0;
         }
     }
 
@@ -144,52 +146,53 @@ Customer GenerateCustomer(void) {
     
     switch(customer_type) {
         case 1:
-            customer1.patience = 10;
-            customer1.cola_demand = true;
+            new_customer.patience = 10;
+            new_customer.cola_demand = true;
             break;
         case 2:
-            customer1.patience = 15;
-            Pancake_demand(customer1.pancake_requirement);
+            new_customer.patience = 15;
+            Pancake_demand(new_customer.pancake_requirement);
             break;
         case 3:
-            customer1.chips_demand = true;
-            customer1.patience = 10;
+            new_customer.chips_demand = true;
+            new_customer.patience = 10;
             break;
         case 4:
-            customer1.patience = 15;
-            customer1.cola_demand = true;
-            Pancake_demand(customer1.pancake_requirement);
+            new_customer.patience = 15;
+            new_customer.cola_demand = true;
+            Pancake_demand(new_customer.pancake_requirement);
             break;
         case 5:
-            customer1.patience = 12;
-            customer1.cola_demand = true;
-            customer1.chips_demand = true;
+            new_customer.patience = 12;
+            new_customer.cola_demand = true;
+            new_customer.chips_demand = true;
             break;
         case 6:
-            customer1.patience = 18;
-            customer1.chips_demand = true;
-            Pancake_demand(customer1.pancake_requirement);
+            new_customer.patience = 18;
+            new_customer.chips_demand = true;
+            Pancake_demand(new_customer.pancake_requirement);
             break;
         case 7:
-            customer1.patience = 20;
-            customer1.cola_demand = true;
-            customer1.chips_demand = true;
-            Pancake_demand(customer1.pancake_requirement);
+            new_customer.patience = 20;
+            new_customer.cola_demand = true;
+            new_customer.chips_demand = true;
+            Pancake_demand(new_customer.pancake_requirement);
             break;
     }
-    
-    customer1.original_time = customer1.patience;
-    customer1.remaining_time = customer1.patience;
+
+    new_customer.original_time = new_customer.patience;
+    new_customer.remaining_time = new_customer.patience;
     
     printf("\n新顾客生成!\n");
+    printf("顾客ID: %d\n", new_customer.customer_id);
     printf("顾客类型: %d\n", customer_type);
-    printf("需要可乐: %s\n", customer1.cola_demand ? "是" : "否");
-    printf("需要薯条: %s\n", customer1.chips_demand ? "是" : "否");
-    
+    printf("需要可乐: %s\n", new_customer.cola_demand ? "是" : "否");
+    printf("需要薯条: %s\n", new_customer.chips_demand ? "是" : "否");
+
     int pancake_count = 0;
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 5; j++) {
-            if (customer1.pancake_requirement[i][j] == 1) {
+            if (new_customer.pancake_requirement[i][j] == 1) {
                 pancake_count++;
                 break;
             }
@@ -200,9 +203,9 @@ Customer GenerateCustomer(void) {
     }else {
         printf("不需要卷饼\n");
     }
-    printf("初始耐心值: %d秒\n", customer1.patience);
+    printf("初始耐心值: %d秒\n", new_customer.patience);
 
-    return customer1;    
+    return new_customer;    
 }
 
 void UpdateCustomer(Customer* customer) {
@@ -278,7 +281,6 @@ void UpdateCustomer(Customer* customer) {
             
             // 生成新顾客覆盖原顾客
             Customer new_customer = GenerateCustomer();
-            new_customer.customer_id = customer_id_counter++;
             
             // 复制新顾客数据到原顾客指针
             *customer = new_customer;
