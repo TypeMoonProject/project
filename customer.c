@@ -10,7 +10,7 @@
 
 // 函数声明
 Customer GenerateCustomer(void);
-void UpdateCustomer(Customer* customer, int elapsed_time);
+void UpdateCustomer(Customer* customer);
 bool SubmitOrder(Customer customer, int wrapped_pancake[5][5], int cola_status, int chips_status);
 int CalculateEarnings(Customer customer);
 int Pancake_demand(int pancake_requirement[5][5]);
@@ -205,7 +205,7 @@ Customer GenerateCustomer(void) {
     return customer1;    
 }
 
-void UpdateCustomer(Customer* customer, int elapsed_time) {
+void UpdateCustomer(Customer* customer) {
     // 如果订单已完成，直接返回
     if (customer->order_is_finished) {
         return;
